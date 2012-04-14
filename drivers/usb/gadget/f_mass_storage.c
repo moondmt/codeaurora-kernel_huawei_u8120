@@ -67,12 +67,14 @@
 #include <linux/freezer.h>
 #include <linux/utsname.h>
 #include <linux/wakelock.h>
+#include <linux/platform_device.h>
 
 #include <linux/usb.h>
 #include <linux/usb_usual.h>
 #include <linux/usb/ch9.h>
 #include <linux/usb/composite.h>
 #include <linux/usb/gadget.h>
+#include <linux/usb/android.h>
 
 #include "f_mass_storage.h"
 #include "gadget_chips.h"
@@ -346,6 +348,7 @@ enum data_direction {
 	DATA_DIR_NONE
 };
 int can_stall = 1;
+static struct usb_mass_storage_platform_data *pdata;
 
 struct fsg_dev {
 	struct usb_function function;
@@ -696,7 +699,7 @@ static void bulk_in_complete(struct usb_ep *ep, struct usb_request *req)
 {
 	struct fsg_dev		*fsg = ep->driver_data;
 	struct fsg_buffhd	*bh = req->context;
-	unsigned long flags;
+	unsigned long		flags;
 
 	if (req->status || req->actual != req->length)
 		DBG(fsg, "%s --> %d, %u/%u\n", __func__,
@@ -715,7 +718,7 @@ static void bulk_out_complete(struct usb_ep *ep, struct usb_request *req)
 {
 	struct fsg_dev		*fsg = ep->driver_data;
 	struct fsg_buffhd	*bh = req->context;
-	unsigned long flags;
+	unsigned long		flags;
 
 	dump_msg(fsg, "bulk-out", req->buf, req->actual);
 	if (req->status || req->actual != bh->bulk_out_intended_length)
@@ -2245,8 +2248,8 @@ static int check_command(struct fsg_dev *fsg, int cmnd_size,
 	/* Verify the length of the command itself */
 	if (cmnd_size != fsg->cmnd_size) {
 
-		/* Special case workaround: MS-Windows issues REQUEST SENSE/
-		 * INQUIRY with cbw->Length == 12 (it should be 6). */
+		/* Special case workaround: MS-Windows issues REQUEST_SENSE
+		 * and INQUIRY commands with cbw->Length == 12 (it should be 6). */
 		if ((fsg->cmnd[0] == SC_REQUEST_SENSE && fsg->cmnd_size == 12)
 		 || (fsg->cmnd[0] == SC_INQUIRY && fsg->cmnd_size == 12))
 			cmnd_size = fsg->cmnd_size;
@@ -3020,6 +3023,7 @@ static int fsg_main_thread(void *fsg_)
 	complete_and_exit(&fsg->thread_notifier, 0);
 }
 
+
 /*-------------------------------------------------------------------------*/
 
 /* If the next two routines are called while the gadget is registered,
@@ -3766,7 +3770,7 @@ static void fsg_function_disable(struct usb_function *f)
 }
 
 int mass_storage_function_add(struct usb_composite_dev *cdev,
-	struct usb_configuration *c, int nluns)
+	struct usb_configuration *c)
 {
 	int		rc;
 	struct fsg_dev	*fsg;
@@ -3776,7 +3780,6 @@ int mass_storage_function_add(struct usb_composite_dev *cdev,
 	if (rc)
 		return rc;
 	fsg = the_fsg;
-	fsg->nluns = nluns;
 
 	spin_lock_init(&fsg->lock);
 	init_rwsem(&fsg->filesem);
@@ -3806,6 +3809,17 @@ int mass_storage_function_add(struct usb_composite_dev *cdev,
 	fsg->function.setup = fsg_function_setup;
 	fsg->function.set_alt = fsg_function_set_alt;
 	fsg->function.disable = fsg_function_disable;
+	if (pdata) {
+		if (pdata->vendor)
+			fsg->vendor = pdata->vendor;
+
+		if (pdata->product)
+			fsg->product = pdata->product;
+
+		if (pdata->release)
+			fsg->release = pdata->release;
+		fsg->nluns = pdata->nluns;
+	}
 
 	rc = usb_add_function(c, &fsg->function);
 	if (rc != 0)
@@ -3820,3 +3834,21 @@ err_switch_dev_register:
 
 	return rc;
 }
+static int __init fsg_probe(struct platform_device *pdev)
+{
+	pdata = pdev->dev.platform_data;
+
+	return 0;
+}
+
+static struct platform_driver fsg_platform_driver = {
+	.driver = { .name = "usb_mass_storage", },
+	.probe = fsg_probe,
+};
+static int __init fsg_init(void)
+{
+	return platform_driver_register(&fsg_platform_driver);
+}
+module_init(fsg_init);
+
+MODULE_LICENSE("GPL v2");

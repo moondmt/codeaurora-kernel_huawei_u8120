@@ -3731,9 +3731,9 @@ static int __init binder_init(void)
 {
 	int ret;
 
-  binder_deferred_workqueue = create_singlethread_workqueue("binder");
-  if (!binder_deferred_workqueue)
-  	      return -ENOMEM;
+	binder_deferred_workqueue = create_singlethread_workqueue("binder");
+	if (!binder_deferred_workqueue)
+		return -ENOMEM;
 
 	binder_proc_dir_entry_root = proc_mkdir("binder", NULL);
 	if (binder_proc_dir_entry_root)

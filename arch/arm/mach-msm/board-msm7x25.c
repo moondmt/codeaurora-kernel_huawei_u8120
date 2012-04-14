@@ -21,7 +21,6 @@
 #include <linux/io.h>
 #include <linux/delay.h>
 #include <linux/bootmem.h>
-#include <linux/usb/mass_storage_function.h>
 #include <linux/power_supply.h>
 
 
@@ -370,7 +369,6 @@ static struct android_usb_platform_data android_usb_pdata = {
 	.product_name	= "Qualcomm HSUSB Device",
 	.manufacturer_name = "Qualcomm Incorporated",
 #endif  /* CONFIG_USB_AUTO_INSTALL */
-	.nluns = 1,
 };
 static struct platform_device android_usb_device = {
 	.name	= "android_usb",
