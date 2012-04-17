@@ -563,8 +563,8 @@ static uint32_t msm_timer_do_sync_to_sclk(
 	last_state = state = smsm_get_state(SMSM_MODEM_STATE);
 	smem_clock_val = *smem_clock;
 	if (smem_clock_val) {
-		printk(KERN_INFO "get_smem_clock: invalid start state %x "
-			"clock %u\n", state, smem_clock_val);
+		/*printk(KERN_INFO "get_smem_clock: invalid start state %x "
+			"clock %u\n", state, smem_clock_val);*/
 		smsm_change_state(SMSM_APPS_STATE,
 				  SMSM_TIMEWAIT, SMSM_TIMEINIT);
 
