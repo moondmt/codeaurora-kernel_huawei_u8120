@@ -117,11 +117,17 @@ static int verify_vdec_pkt_cmd(struct msm_adsp_module *module,
 		start_pos = 5;
 		break;
 	case 0x8201: /* h.264 vld in arm */
-		num_addr = skip = 8;
+		num_addr = 16;
+		skip = 0;
 		start_pos = 6;
 		break;
 	case 0x4D01: /* mpeg-4 and h.263 vld in arm */
 		num_addr = 3;
+		skip = 0;
+		start_pos = 5;
+		break;
+	case 0x9201: /*For Real Decoder*/
+		num_addr = 2;
 		skip = 0;
 		start_pos = 5;
 		break;
@@ -134,6 +140,11 @@ static int verify_vdec_pkt_cmd(struct msm_adsp_module *module,
 		num_addr = 2;
 		skip = 0;
 		start_pos = 5;
+		break;
+	case 0xC201: /*WMV main profile*/
+		num_addr = 3;
+		skip = 0;
+		start_pos = 6;
 		break;
 	default:
 		return 0;
@@ -191,4 +202,3 @@ int adsp_video_verify_cmd(struct msm_adsp_module *module,
 		return 0;
 	}
 }
-

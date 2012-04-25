@@ -23,6 +23,8 @@
 #include <linux/rtc.h>
 #include <linux/android_alarm.h>
 #include <linux/rtc-msm.h>
+#include <linux/time.h>
+#include <linux/unistd.h>
 /* time_remote_mtoa server definitions. */
 
 #define TIME_REMOTE_MTOA_PROG 0x3000005d

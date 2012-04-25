@@ -53,7 +53,9 @@ struct lockdep_map rcu_lock_map =
 EXPORT_SYMBOL_GPL(rcu_lock_map);
 #endif
 
+#ifndef CONFIG_JRCU
 int rcu_scheduler_active __read_mostly;
+#endif
 
 /*
  * Awaken the corresponding synchronize_rcu() instance now that a
@@ -67,7 +69,7 @@ void wakeme_after_rcu(struct rcu_head  *head)
 	complete(&rcu->completion);
 }
 
-#ifndef CONFIG_TINY_RCU
+#ifdef CONFIG_TINY_RCU
 
 #ifdef CONFIG_TREE_PREEMPT_RCU
 
@@ -96,7 +98,7 @@ void synchronize_rcu(void)
 EXPORT_SYMBOL_GPL(synchronize_rcu);
 
 #endif /* #ifdef CONFIG_TREE_PREEMPT_RCU */
-
+#ifndef CONFIG_JRCU
 /**
  * synchronize_sched - wait until an rcu-sched grace period has elapsed.
  *
@@ -159,7 +161,7 @@ void synchronize_rcu_bh(void)
 }
 EXPORT_SYMBOL_GPL(synchronize_rcu_bh);
 
-#endif /* #ifndef CONFIG_TINY_RCU */
+#endif /* #ifdef CONFIG_TINY_RCU */
 
 static int __cpuinit rcu_barrier_cpu_hotplug(struct notifier_block *self,
 		unsigned long action, void *hcpu)
@@ -189,3 +191,5 @@ void rcu_scheduler_starting(void)
 	WARN_ON(nr_context_switches() > 0);
 	rcu_scheduler_active = 1;
 }
+#endif /* CONFIG_JRCU */
+

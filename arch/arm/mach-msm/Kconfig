@@ -1028,8 +1028,22 @@ config MSM_DALRPC_TEST
 
 if CPU_FREQ_MSM
 
+config ACPUCLOCK_V1
+	bool "Original ACPUCLOCK Overclocked."
+	default n
+	help
+	  Allow original acpuclock.c with overclock values.
+
+config ACPUCLOCK_V2
+	bool "AHB ACPUCLOCK Overclocked."
+	default n
+	help
+	  acpuclock.c uses 33% higher AHB clock for the overclocked
+          frequencies on 528MHz CPUs.
+
 config MSM_CPU_FREQ_SET_MIN_MAX
 	bool "Set Min/Max CPU frequencies."
+	depends on ACPUCLOCK_V2
 	default n
 	help
 	  Allow setting min and max CPU frequencies. Sysfs can be used
@@ -1064,6 +1078,7 @@ config MSM_CPU_FREQ_OVERCLOCK_AHB
 
 config MSM_CPU_FREQ_UNDERCLOCK
         bool "Underclock the CPU frequency"
+	depends on MSM_CPU_FREQ_SET_MIN_MAX
         default n
         help
           Adds a number of underclocked frequencies

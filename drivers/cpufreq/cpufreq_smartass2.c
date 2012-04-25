@@ -56,7 +56,7 @@ static unsigned int awake_ideal_freq;
 static unsigned int sleep_ideal_freq;
 
 /*
- * Freqeuncy delta when ramping up above the ideal freqeuncy.
+ * Freqeuncy delta when ramping up above the ideal frequency.
  * Zero disables and causes to always jump straight to max frequency.
  * When below the ideal freqeuncy we always ramp up to the ideal freq.
  */
@@ -74,13 +74,13 @@ static unsigned int ramp_down_step;
 /*
  * CPU freq will be increased if measured load > max_cpu_load;
  */
-#define DEFAULT_MAX_CPU_LOAD 60
+#define DEFAULT_MAX_CPU_LOAD 65
 static unsigned long max_cpu_load;
 
 /*
  * CPU freq will be decreased if measured load < min_cpu_load;
  */
-#define DEFAULT_MIN_CPU_LOAD 30
+#define DEFAULT_MIN_CPU_LOAD 50
 static unsigned long min_cpu_load;
 
 /*
@@ -142,6 +142,8 @@ static cpumask_t work_cpumask;
 static spinlock_t cpumask_lock;
 
 static unsigned int suspended;
+
+#define DEBUG_MASK 0 // 1 | 2 | 4
 
 #define dprintk(flag,msg...) do { \
 	if (debug_mask & flag) printk(KERN_DEBUG msg); \
@@ -800,7 +802,7 @@ static int __init cpufreq_smartass_init(void)
 {
 	unsigned int i;
 	struct smartass_info_s *this_smartass;
-	debug_mask = 0;
+	debug_mask = DEBUG_MASK;
 	up_rate_us = DEFAULT_UP_RATE_US;
 	down_rate_us = DEFAULT_DOWN_RATE_US;
 	sleep_ideal_freq = DEFAULT_SLEEP_IDEAL_FREQ;

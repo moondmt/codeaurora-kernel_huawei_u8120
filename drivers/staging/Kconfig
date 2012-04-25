@@ -127,5 +127,13 @@ source "drivers/staging/iio/Kconfig"
 
 source "drivers/staging/ramzswap/Kconfig"
 
+source "drivers/staging/zram/Kconfig"
+
+source "drivers/staging/zram-v2/Kconfig"
+
+source "drivers/staging/snappy/Kconfig"
+
+source "drivers/staging/zcache/Kconfig"
+
 endif # !STAGING_EXCLUDE_BUILD
 endif # STAGING

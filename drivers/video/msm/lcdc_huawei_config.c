@@ -309,8 +309,8 @@ void set_touch_exta_key_backlight(int level)
 {
     int ret = 0;
     bool use_touch_key_light = false;
-    if(machine_is_msm7x25_u8150() || machine_is_msm7x25_c8150() \ 
-      || machine_is_msm7x25_u8160() || machine_is_msm7x25_u8130() \ 
+    if(machine_is_msm7x25_u8150() || machine_is_msm7x25_c8150() \
+      || machine_is_msm7x25_u8160() || machine_is_msm7x25_u8130() \
       || machine_is_msm7x25_c8500() || machine_is_msm7x25_u8159() \
 	  || machine_is_msm7x25_c8510() )
     {
@@ -372,8 +372,8 @@ void lcd_set_backlight_pwm(int level)
 
     /*used by product u8110*/
 	if ( !(machine_is_msm7x25_u8150() || machine_is_msm7x25_c8150() \
-      || machine_is_msm7x25_u8160() || machine_is_msm7x25_u8130() \ 
-      || machine_is_msm7x25_c8510() || machine_is_msm7x25_u8159()) )
+      || machine_is_msm7x25_u8160() || machine_is_msm7x25_u8130() \
+      || machine_is_msm7x25_c8500() || machine_is_msm7x25_u8159()) )
 	{
 		set_touch_exta_key_backlight(level);
 	}

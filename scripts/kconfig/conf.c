@@ -626,3 +626,4 @@ void xfgets(str, size, in)
 	if (fgets(str, size, in) == NULL)
 		fprintf(stderr, "\nError in reading or end of file.\n");
 }
+

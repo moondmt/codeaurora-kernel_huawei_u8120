@@ -149,6 +149,7 @@ struct msm_clock_percpu_data {
 	uint32_t                  last_set;
 	uint32_t                  sleep_offset;
 	uint32_t                  alarm_vtime;
+	uint32_t                  alarm;
 	uint32_t                  non_sleep_offset;
 	uint32_t                  in_sync;
 	cycle_t                   stopped_tick;
@@ -195,7 +196,8 @@ static struct msm_clock msm_clocks[] = {
 		.flags =
 			MSM_CLOCK_FLAGS_UNSTABLE_COUNT |
 			MSM_CLOCK_FLAGS_ODD_MATCH_WRITE |
-			MSM_CLOCK_FLAGS_DELAYED_WRITE_POST,
+			MSM_CLOCK_FLAGS_DELAYED_WRITE_POST |
+			0,
 		.write_delay = 9,
 	},
 	[MSM_CLOCK_DGT] = {
@@ -325,12 +327,17 @@ static int msm_timer_set_next_event(unsigned long cycles,
 	clock = container_of(evt, struct msm_clock, clockevent);
 #endif
 	clock_state = &__get_cpu_var(msm_clocks_percpu)[clock->index];
+	if (clock_state->stopped)
+		return 0;
 	now = msm_read_timer_count(clock, LOCAL_TIMER);
 	alarm = now + (cycles << clock->shift);
 	if (clock->flags & MSM_CLOCK_FLAGS_ODD_MATCH_WRITE)
 		while (now == clock_state->last_set)
 			now = msm_read_timer_count(clock, LOCAL_TIMER);
+
+	clock_state->alarm = alarm;
 	writel(alarm, clock->regbase + TIMER_MATCH_VAL);
+
 	if (clock->flags & MSM_CLOCK_FLAGS_DELAYED_WRITE_POST) {
 		/* read the counter four extra times to make sure write posts
 		   before reading the time */
@@ -341,18 +348,10 @@ static int msm_timer_set_next_event(unsigned long cycles,
 	clock_state->last_set = now;
 	clock_state->alarm_vtime = alarm + clock_state->sleep_offset;
 	late = now - alarm;
-	if (late >= (int)(-clock->write_delay << clock->shift) && late < DGT_HZ*5) {
-		static int print_limit = 10;
-		if (print_limit > 0) {
-			print_limit--;
-			printk(KERN_NOTICE "msm_timer_set_next_event(%lu) "
-			       "clock %s, alarm already expired, now %x, "
-			       "alarm %x, late %d%s\n",
-			       cycles, clock->clockevent.name, now, alarm, late,
-			       print_limit ? "" : " stop printing");
-		}
-		return -ETIME;
-	}
+	if (late >= (int)(-clock->write_delay << clock->shift) &&
+		late < clock->freq*5)
+	   return -ETIME;
+
 	return 0;
 }
 
@@ -777,7 +776,7 @@ int64_t msm_timer_enter_idle(void)
 	count = msm_read_timer_count(clock, LOCAL_TIMER);
 	if (clock_state->stopped++ == 0)
 		clock_state->stopped_tick = count + clock_state->sleep_offset;
-	alarm = readl(clock->regbase + TIMER_MATCH_VAL);
+	alarm = clock_state->alarm;
 	delta = alarm - count;
 	if (delta <= -(int32_t)((clock->freq << clock->shift) >> 10)) {
 		/* timer should have triggered 1ms ago */
@@ -1037,6 +1036,7 @@ void local_timer_setup(struct clock_event_device *evt)
 		writel(1, clock->regbase + TIMER_CLEAR);
 		writel(0, clock->regbase + TIMER_COUNT_VAL);
 		writel(~0, clock->regbase + TIMER_MATCH_VAL);
+		__get_cpu_var(msm_clocks_percpu)[clock->index].alarm = ~0;
 	}
 	evt->irq = clock->irq.irq;
 	evt->name = "local_timer";
@@ -1054,6 +1054,7 @@ void local_timer_setup(struct clock_event_device *evt)
 	local_clock_event = evt;
 
 	local_irq_save(flags);
+	gic_clear_spi_pending(clock->irq.irq);
 	get_irq_chip(clock->irq.irq)->unmask(clock->irq.irq);
 	local_irq_restore(flags);
 
@@ -1064,9 +1065,9 @@ int local_timer_ack(void)
 {
 	return 1;
 }
-
 #endif
 
 struct sys_timer msm_timer = {
 	.init = msm_timer_init
 };
+

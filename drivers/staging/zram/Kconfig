@@ -1,0 +1,10 @@
+config XVMALLOC
+	bool
+	default n
+
+config ZRAM
+	tristate "Compressed swap (zram) support"
+	depends on SWAP && CRYPTO_LZO
+	default n
+	---help---
+	  This will build the compressed swap (zram) module

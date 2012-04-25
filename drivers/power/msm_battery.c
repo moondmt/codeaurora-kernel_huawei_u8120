@@ -62,7 +62,7 @@
 #define BATTERY_CB_ID_LOW_VOL		2
 
 #define BATTERY_LOW            	2800
-#define BATTERY_HIGH           	4300
+#define BATTERY_HIGH           	4250
 
 #define ONCRPC_CHG_GET_GENERAL_STATUS_PROC 	12
 #define ONCRPC_CHARGER_API_VERSIONS_PROC 	0xffffffff
@@ -341,13 +341,13 @@ static int msm_batt_power_get_property(struct power_supply *psy,
 		val->intval = msm_batt_info.batt_technology;
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
-		val->intval = msm_batt_info.voltage_max_design;
+		val->intval = msm_batt_info.voltage_max_design*1000;
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
-		val->intval = msm_batt_info.voltage_min_design;
+		val->intval = msm_batt_info.voltage_min_design*1000;
 		break;
 	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-		val->intval = msm_batt_info.battery_voltage;
+		val->intval = msm_batt_info.battery_voltage*1000;
 		break;
 	case POWER_SUPPLY_PROP_CAPACITY:
 		val->intval = msm_batt_info.batt_capacity;

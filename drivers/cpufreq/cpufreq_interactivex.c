@@ -259,7 +259,7 @@ static struct attribute *interactivex_attributes[] = {
 
 static struct attribute_group interactivex_attr_group = {
 	.attrs = interactivex_attributes,
-	.name = "interactivex",
+  	.name = "InteractiveX",
 };
 
 static void interactivex_suspend(int suspend)
@@ -375,7 +375,7 @@ static int __init cpufreq_interactivex_init(void)
 }
 
 #ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVEX
-pure_initcall(cpufreq_interactivex_init);
+fs_initcall(cpufreq_interactivex_init);
 #else
 module_init(cpufreq_interactivex_init);
 #endif
@@ -394,3 +394,4 @@ MODULE_AUTHOR("Mike Chan <mike@android.com>");
 MODULE_DESCRIPTION("'cpufreq_interactivex' - A cpufreq governor for "
 	"Latency sensitive workloads");
 MODULE_LICENSE("GPL");
+

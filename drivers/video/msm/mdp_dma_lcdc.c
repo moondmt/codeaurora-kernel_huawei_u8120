@@ -62,7 +62,7 @@ extern uint32 mdp_intr_mask;
 int first_pixel_start_x;
 int first_pixel_start_y;
 
-int   lcdc_polarity_set(void)
+int lcdc_polarity_set(void)
 {
     int hsync_polarity;
     int vsync_polarity;
@@ -398,7 +398,7 @@ int mdp_lcdc_off(struct platform_device *pdev)
 #endif
 
 	/* delay to make sure the last frame finishes */
-	mdelay(100);
+	mdelay(16);
 
 	return ret;
 }

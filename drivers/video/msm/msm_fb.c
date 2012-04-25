@@ -179,7 +179,7 @@ static void msm_fb_set_bl_brightness(struct led_classdev *led_cdev,
 
 static struct led_classdev backlight_led = {
 	.name		= "lcd-backlight",
-	.brightness	= MAX_BACKLIGHT_BRIGHTNESS,
+	.brightness  = MAX_BACKLIGHT_BRIGHTNESS>>3,//minimize power on light to save battery
 	.brightness_set	= msm_fb_set_bl_brightness,
 };
 #endif
@@ -249,9 +249,9 @@ static int msm_fb_probe(struct platform_device *pdev)
 
 	mfd->panel_info.frame_count = 0;
 #ifdef CONFIG_HUAWEI_KERNEL
-    mfd->bl_level = LCD_DEFAULT_BK_LEV;
+    mfd->bl_level = LCD_DEFAULT_BK_LEV>>2;
 #else
-	mfd->bl_level = mfd->panel_info.bl_max;
+	mfd->bl_level = mfd->panel_info.bl_max>>3;
 #endif
 
 #ifdef CONFIG_FB_MSM_OVERLAY
@@ -514,7 +514,7 @@ void msm_fb_set_backlight(struct msm_fb_data_type *mfd, __u32 bkl_lvl, u32 save)
 			pdata->set_backlight(mfd);
 
 #ifdef CONFIG_HUAWEI_EVALUATE_POWER_CONSUMPTION
-            huawei_rpc_current_consuem_notify(EVENT_LCD_BACKLIGHT, bkl_lvl);
+            huawei_rpc_current_consume_notify(EVENT_LCD_BACKLIGHT, bkl_lvl);
 #endif
 
 			if (!save)
@@ -544,7 +544,7 @@ static int msm_fb_blank_sub(int blank_mode, struct fb_info *info,
 	case FB_BLANK_UNBLANK:
 		if (!mfd->panel_power_on) {
 #ifndef CONFIG_HUAWEI_KERNEL
-            mdelay(100);
+            mdelay(16);
 #else 
             set_current_state(TASK_INTERRUPTIBLE);
             schedule_timeout(HZ/10); 
@@ -583,7 +583,7 @@ static int msm_fb_blank_sub(int blank_mode, struct fb_info *info,
 			curr_pwr_state = mfd->panel_power_on;
 			mfd->panel_power_on = FALSE;
 #ifndef CONFIG_HUAWEI_KERNEL
-            mdelay(100);
+            mdelay(16);
 #else
             set_current_state(TASK_INTERRUPTIBLE);
             schedule_timeout(HZ/10); 

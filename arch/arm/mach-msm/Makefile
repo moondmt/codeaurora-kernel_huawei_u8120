@@ -13,7 +13,7 @@ ifndef CONFIG_ARCH_MSM8X60
 	endif
 endif
 
-obj-$(CONFIG_ARCH_MSM_ARM11) += acpuclock.o timer.o
+obj-$(CONFIG_ARCH_MSM_ARM11) += timer.o
 obj-$(CONFIG_ARCH_MSM_SCORPION) += timer.o
 obj-$(CONFIG_ARCH_MSM_SCORPIONMP) += timer.o
 
@@ -97,7 +97,13 @@ obj-$(CONFIG_HUAWEI_U8220_KEYBOARD) += keypad_linux_u8220.o
 #obj-$(CONFIG_HUAWEI_U8220_JOGBALL) +=jogball_device.o 
 obj-$(CONFIG_HUAWEI_JOGBALL) +=jogball_device.o 
 
-obj-$(CONFIG_HUAWEI_MSM_VIBRATOR) += msm_vibrator.o huawei_serial_server.o kernel_msm_msg.o
+obj-$(CONFIG_HUAWEI_MSM_VIBRATOR) += msm_vibrator.o
+
+obj-$(CONFIG_ACPUCLOCK_V1) += acpuclock-7x25.o
+
+obj-$(CONFIG_ACPUCLOCK_V2) += acpuclock.o
+
+obj-$(CONFIG_SERIAL_MSM) += huawei_serial_server.o kernel_msm_msg.o
 
 #/*add code to support JOY(U8120) */
 obj-$(CONFIG_HUAWEI_FEATURE_OFN_KEY) += msm_ofn_key.o

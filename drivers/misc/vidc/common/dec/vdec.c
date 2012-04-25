@@ -417,25 +417,37 @@ static u32 vid_dec_set_codec(struct video_client_ctx *client_ctx,
 
 	switch (*vdec_codec_type) {
 	case VDEC_CODECTYPE_MPEG4:
-		codec_type.e_codec = VCD_CODEC_MPEG4;
+		codec.codec = VCD_CODEC_MPEG4;
 		break;
 	case VDEC_CODECTYPE_H264:
-		codec_type.e_codec = VCD_CODEC_H264;
+		codec.codec = VCD_CODEC_H264;
+		break;
+	case VDEC_CODECTYPE_DIVX_3:
+		codec.codec = VCD_CODEC_DIVX_3;
+		break;
+	case VDEC_CODECTYPE_DIVX_4:
+		codec.codec = VCD_CODEC_DIVX_4;
 		break;
 	case VDEC_CODECTYPE_DIVX_5:
-		codec_type.e_codec = VCD_CODEC_DIVX_5;
+		codec.codec = VCD_CODEC_DIVX_5;
+		break;
+	case VDEC_CODECTYPE_DIVX_6:
+		codec.codec = VCD_CODEC_DIVX_6;
 		break;
 	case VDEC_CODECTYPE_XVID:
-		codec_type.e_codec = VCD_CODEC_XVID;
+		codec.codec = VCD_CODEC_XVID;
 		break;
 	case VDEC_CODECTYPE_H263:
-		codec_type.e_codec = VCD_CODEC_H263;
+		codec.codec = VCD_CODEC_H263;
 		break;
 	case VDEC_CODECTYPE_MPEG2:
-		codec_type.e_codec = VCD_CODEC_MPEG2;
+		codec.codec = VCD_CODEC_MPEG2;
 		break;
 	case VDEC_CODECTYPE_VC1:
-		codec_type.e_codec = VCD_CODEC_VC1;
+		codec.codec = VCD_CODEC_VC1;
+		break;
+	case VDEC_CODECTYPE_VC1_RCV:
+		codec.codec = VCD_CODEC_VC1_RCV;
 		break;
 	default:
 		result = FALSE;

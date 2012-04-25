@@ -13,6 +13,7 @@
  *
  */
 
+
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -107,6 +108,18 @@
 
 #define TOUCH_OFFSET    4
 
+
+//static int32_t msm_tscal_scaler = 65536;
+static int32_t msm_tscal_xscale = 76459; //70046;
+static int32_t msm_tscal_xoffset = -5548871; //-4191987;
+static int32_t msm_tscal_yscale = 72818; //71735;
+static int32_t msm_tscal_yoffset = -4369172 ; //-3004437;
+//module_param_named(tscal_scaler, msm_tscal_scaler, int, 0664);
+module_param_named(tscal_xscale, msm_tscal_xscale, int, 0664);
+module_param_named(tscal_xoffset, msm_tscal_xoffset, int, 0664);
+module_param_named(tscal_yscale, msm_tscal_yscale, int, 0664);
+module_param_named(tscal_yoffset, msm_tscal_yoffset, int, 0664);
+
 struct ts {
     struct input_dev *input;
     struct timer_list timer;
@@ -198,7 +211,7 @@ static void ts_update_pen_state(struct ts *ts, int x, int y, int pressure);
 /*===========================================================================
 FUNCTION      is_in_extra_region
 DESCRIPTION
-              ÊÇ·ñÔÚ¸½¼ÓTOUCHÇø
+              æ˜¯å¦åœ¨é™„åŠ TOUCHåŒº
 DEPENDENCIES
   None
 RETURN VALUE
@@ -222,7 +235,7 @@ static bool is_in_extra_region(int pos_x, int pos_y)
 /*===========================================================================
 FUNCTION      touch_get_extra_keycode
 DESCRIPTION
-              È¡µÃ¸½¼ÓÇø¼üÖµ
+              å–å¾—é™„åŠ åŒºé”®å€¼
 DEPENDENCIES
   None
 RETURN VALUE
@@ -250,7 +263,7 @@ static u32 touch_get_extra_keycode(int pos_x, int pos_y)
 /*===========================================================================
 FUNCTION      touch_pass_extra_keycode
 DESCRIPTION:  
-              ¸½¼ÓÇøÓò¼üÖµÉÏ±¨´¦Àí
+              é™„åŠ åŒºåŸŸé”®å€¼ä¸ŠæŠ¥å¤„ç†
 DEPENDENCIES
   None
 RETURN VALUE
@@ -276,7 +289,7 @@ static void touch_pass_extra_keycode(struct ts *ts)
 /*===========================================================================
 FUNCTION      touch_extra_key_proc
 DESCRIPTION:  
-              ¶¨Ê±Æ÷´¦Àíº¯Êý£¬È·¶¨ÊÇ·ñÉÏ±¨¼ÇÂ¼¼üÖµµÄDOWNÊÂ¼þ
+              å®šæ—¶å™¨å¤„ç†å‡½æ•°ï¼Œç¡®å®šæ˜¯å¦ä¸ŠæŠ¥è®°å½•é”®å€¼çš„DOWNäº‹ä»¶
 DEPENDENCIES
   None
 RETURN VALUE
@@ -288,8 +301,8 @@ static void touch_extra_key_proc(struct ts *ts)
 {
     u32  key_tmp = KEY_RESERVED;
 
-    /* ÅÐ¶Ïµ±Ç°¼üÖµÊÇ·ñÓë¼ÇÂ¼¼üÖµÎªÍ¬Ò»¼üÖµ£¬
-     * Èç¹ûÊÇÔòÉÏ±¨¸Ã¼üÖµDOWN ÊÂ¼þ
+    /* åˆ¤æ–­å½“å‰é”®å€¼æ˜¯å¦ä¸Žè®°å½•é”®å€¼ä¸ºåŒä¸€é”®å€¼ï¼Œ
+     * å¦‚æžœæ˜¯åˆ™ä¸ŠæŠ¥è¯¥é”®å€¼DOWN äº‹ä»¶
      */
     key_tmp = touch_get_extra_keycode(ts->last_x, ts->last_y) ;
 
@@ -313,7 +326,7 @@ static void touch_extra_key_proc(struct ts *ts)
 /*===========================================================================
 FUNCTION      ts_key_timer
 DESCRIPTION:  
-              ¼üÅÌ¶¨Ê±Æ÷£¬È¥³ý»¬¶¯Ôì³ÉÅÐ¶Ï´íÎó
+              é”®ç›˜å®šæ—¶å™¨ï¼ŒåŽ»é™¤æ»‘åŠ¨é€ æˆåˆ¤æ–­é”™è¯¯
 DEPENDENCIES
   None
 RETURN VALUE
@@ -332,7 +345,7 @@ static void ts_key_timer(unsigned long arg)
 /*===========================================================================
 FUNCTION      update_pen_and_key_state
 DESCRIPTION:  
-              ÉÏ±¨touchµÄ×ø±êÖµ»ò°´¼ü¼üÖµ
+              ä¸ŠæŠ¥touchçš„åæ ‡å€¼æˆ–æŒ‰é”®é”®å€¼
 DEPENDENCIES
   None
 RETURN VALUE
@@ -348,7 +361,7 @@ static void update_pen_and_key_state(struct ts *ts, int x, int y, int pressure)
     {
         if(is_in_extra_region(ts->last_x, ts->last_y))
         {
-            /* Èç¹û¼ÇÂ¼¼üÖµ»¹Ã»ÓÐÊÍ·Å£¬Ôò·µ»Ø */
+            /* å¦‚æžœè®°å½•é”®å€¼è¿˜æ²¡æœ‰é‡Šæ”¾ï¼Œåˆ™è¿”å›ž */
             if ((FALSE == record_extra_keycode.bRelease && KEY_RESERVED != record_extra_keycode.record_extra_key)
                 || true == record_extra_keycode.touch_region_first )
             {
@@ -383,7 +396,7 @@ static void update_pen_and_key_state(struct ts *ts, int x, int y, int pressure)
                 && FALSE == record_extra_keycode.bRelease
                 && TRUE == record_extra_keycode.bSentPress)
             {
-                /*µ±ÉÏ±¨ÁË¼üÖµºóÔÙ½øÈëtouchÇøÊ±£¬ÒªÉÏ±¨release¼ü*/
+                /*å½“ä¸ŠæŠ¥äº†é”®å€¼åŽå†è¿›å…¥touchåŒºæ—¶ï¼Œè¦ä¸ŠæŠ¥releaseé”®*/
                 record_extra_keycode.bRelease = TRUE;
                 touch_pass_extra_keycode(ts);
                 
@@ -409,7 +422,7 @@ static void update_pen_and_key_state(struct ts *ts, int x, int y, int pressure)
             }
             else
             {
-                /* up °´¼ü²»¿É¶ªÆú*/
+                /* up æŒ‰é”®ä¸å¯ä¸¢å¼ƒ*/
                 ts_update_pen_state(ts, x, y, pressure);
             }
 
@@ -431,6 +444,12 @@ static void ts_update_pen_state(struct ts *ts, int x, int y, int pressure)
 {
     TSSC("{%d, %d}, pressure = %3d\n", x, y, pressure);
     if (pressure) {
+        // Calibrate
+//        x = (x*msm_tscal_xscale + msm_tscal_xoffset + msm_tscal_scaler/2)/msm_tscal_scaler;
+//        y = (y*msm_tscal_yscale + msm_tscal_yoffset + msm_tscal_scaler/2)/msm_tscal_scaler;
+        x = (x*msm_tscal_xscale + msm_tscal_xoffset + 32768)/65536;
+        y = (y*msm_tscal_yscale + msm_tscal_yoffset + 32768)/65536;
+
         input_report_abs(ts->input, ABS_X, x);
         input_report_abs(ts->input, ABS_Y, y);
         input_report_abs(ts->input, ABS_PRESSURE, pressure);
@@ -909,7 +928,7 @@ static int virt_key_read_proc(char *buf, char **start, off_t offset,
     len = sprintf(buf,"%d\n",virt_key_calibration_y);
     buf += len;
     outlen += len;
-	
+
     return outlen;
 }
 
@@ -921,7 +940,7 @@ static int msm_ts_read_proc(char *buf, char **start, off_t offset,
 	len = sprintf(buf,"%c\n",ts_calibration_stats);
 	buf += len;
 	outlen += len;
-	
+
 	return outlen;
 }
 
@@ -976,7 +995,7 @@ static int __init ts_init(void)
         key_cal_proc_entry->data = NULL;
     }
 
-	
+
     return platform_driver_register(&ts_driver);
 }
 module_init(ts_init);

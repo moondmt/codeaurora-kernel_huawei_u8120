@@ -16,6 +16,7 @@ static inline pmd_t *pmd_off_k(unsigned long virt)
 }
 
 struct mem_type;
+
 const struct mem_type *get_mem_type(unsigned int type);
 
 #endif

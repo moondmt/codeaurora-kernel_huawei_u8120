@@ -116,6 +116,7 @@ struct android_dev {
 	int version;
 
 	int adb_enabled;
+	int nluns;
 	struct mutex lock;
 	struct android_usb_platform_data *pdata;
 	unsigned long functions;
@@ -223,7 +224,7 @@ static int  android_bind_config(struct usb_configuration *c)
 			break;
 		case ANDROID_MSC:
 #ifdef CONFIG_USB_AUTO_INSTALL
-            //USB_PR("%s, dev->nluns=%d\n", __func__, dev->nluns);
+            USB_PR("%s, dev->nluns=%d\n", __func__, dev->nluns);
 #endif 
 			ret = mass_storage_function_add(dev->cdev, c);
 			if (ret)
@@ -289,15 +290,6 @@ static int  android_bind_config(struct usb_configuration *c)
 	}
 	return ret;
 
-}
-
-static int is_usb_networking_on(void)
-{
-#if defined(CONFIG_USB_ANDROID_CDC_ECM) || defined(CONFIG_USB_ANDROID_RNDIS)
-	return 1;
-#else
-	return 0;
-#endif
 }
 
 static int get_num_of_serial_ports(void)
@@ -530,8 +522,8 @@ static int android_switch_composition(u16 pid)
 	}
 
 #ifdef CONFIG_USB_AUTO_INSTALL
-    //USB_PR("dev->adb_enabled=%d, dev->nluns=%d, dev->functions=0x%x\n", 
-    //        dev->adb_enabled, dev->nluns, (unsigned int)dev->functions);
+    USB_PR("dev->adb_enabled=%d, dev->nluns=%d, dev->functions=0x%x\n", 
+            dev->adb_enabled, dev->nluns, (unsigned int)dev->functions);
     USB_PR("old_pid=0x%x  ----> product_id=0x%x\n", old_pid, product_id);
 	if( product_id == PID_GOOGLE ){
 		printk("%s: switch to %x, disable ep reset\n", __func__,  product_id);
@@ -849,8 +841,8 @@ static int __init android_probe(struct platform_device *pdev)
     
     if((GOOGLE_INDEX == usb_para_info.usb_pid_index) && !is_japan_emboile)
     {
-        //dev->nluns = 2;
-        //USB_PR("Add CDROM to LIGHTNING. nluns=%d\n", dev->nluns);
+        dev->nluns = 2;
+        USB_PR("Add CDROM to LIGHTNING. nluns=%d\n", dev->nluns);
     }
 #endif  
 
