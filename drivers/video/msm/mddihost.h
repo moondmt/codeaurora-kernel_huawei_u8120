@@ -35,7 +35,7 @@
 #include <linux/time.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
-#include "linux/proc_fs.h"
+#include <linux/proc_fs.h>
 #include <linux/types.h>
 #include <linux/dma-mapping.h>
 #include <linux/clk.h>
