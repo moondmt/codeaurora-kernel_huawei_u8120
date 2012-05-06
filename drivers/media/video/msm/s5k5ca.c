@@ -25,7 +25,7 @@
 #include <mach/gpio.h>
 #include <mach/camera.h>
 #include "s5k5ca.h"
-#include "linux/hardware_self_adapt.h"
+#include <linux/hardware_self_adapt.h>
 #ifdef CONFIG_HUAWEI_HW_DEV_DCT
 #include <linux/hw_dev_dec.h>
 #endif

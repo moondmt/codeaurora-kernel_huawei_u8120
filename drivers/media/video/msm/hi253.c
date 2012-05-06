@@ -30,7 +30,7 @@
 #include <linux/hw_dev_dec.h>
 #endif
 
-#include "linux/hardware_self_adapt.h"
+#include <linux/hardware_self_adapt.h>
 #undef CDBG
 #define CDBG(fmt, args...) printk(KERN_INFO "hi253.c: " fmt, ## args)
 

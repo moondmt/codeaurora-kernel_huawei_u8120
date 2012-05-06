@@ -31,7 +31,7 @@
 #include <asm/uaccess.h>
 
 #include <linux/gs_st_lis3xh.h>
-#include "linux/hardware_self_adapt.h"
+#include <linux/hardware_self_adapt.h>
 
 #ifdef CONFIG_HUAWEI_HW_DEV_DCT
 #include <linux/hw_dev_dec.h>

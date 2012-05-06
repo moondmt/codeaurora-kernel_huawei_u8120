@@ -27,7 +27,7 @@
 #include <linux/delay.h>
 #include <linux/miscdevice.h>
 #include <asm/uaccess.h>
-#include "linux/hardware_self_adapt.h"
+#include <linux/hardware_self_adapt.h>
 #include <linux/slab.h>
 
 #include <linux/gs_adxl345.h>

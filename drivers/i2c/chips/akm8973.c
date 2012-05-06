@@ -17,11 +17,6 @@
  *
  */
 
-
-
-
-
-
 #include <linux/interrupt.h>
 #include <linux/i2c.h>
 #include <linux/slab.h>
@@ -40,7 +35,7 @@
 #include <linux/android_power.h>
 #endif
 
-#include "linux/hardware_self_adapt.h"
+#include <linux/hardware_self_adapt.h>
 
 #ifdef CONFIG_HUAWEI_HW_DEV_DCT
 #include <linux/hw_dev_dec.h>

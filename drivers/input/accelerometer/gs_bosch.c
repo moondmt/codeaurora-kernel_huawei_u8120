@@ -27,7 +27,7 @@
 #include <linux/delay.h>
 #include <linux/miscdevice.h>
 #include <asm/uaccess.h>
-#include "linux/hardware_self_adapt.h"
+#include <linux/hardware_self_adapt.h>
 
 #ifdef CONFIG_HUAWEI_HW_DEV_DCT
 #include <linux/hw_dev_dec.h>
@@ -585,6 +585,7 @@ static int gs_probe(
 			ret = -ENOMEM;
 			printk(KERN_ERR "%s: Failed to allocate input device\n",__FUNCTION__);
 			goto err_input_dev_alloc_failed;
+
 		}
 		
 		gs->input_dev->name = "sensors";
@@ -718,7 +719,8 @@ static int gs_resume(struct i2c_client *client)
 {
 	struct gs_data *gs = i2c_get_clientdata(client);
 	
-	bma250_set_mode(MODE_NORMAL); 	
+	bma250_set_mode(MODE_NORMAL); 
+	
 	if (!gs->use_irq)
 		hrtimer_start(&gs->timer, ktime_set(1, 0), HRTIMER_MODE_REL);
 	else

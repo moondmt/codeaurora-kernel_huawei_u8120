@@ -16,7 +16,7 @@
 #include <linux/io.h>
 #include <linux/platform_device.h>
 #include <mach/gpio.h>
-#include "linux/hardware_self_adapt.h"
+#include <linux/hardware_self_adapt.h>
 #include <linux/irq.h>
 
 //#define TS_DEBUG 

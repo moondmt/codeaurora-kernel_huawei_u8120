@@ -32,7 +32,7 @@
 #include <linux/freezer.h>
 #include <linux/akm8973.h>
 #include <linux/earlysuspend.h>
-#include "linux/hardware_self_adapt.h"
+#include <linux/hardware_self_adapt.h>
 
 #ifdef CONFIG_ANDROID_POWER
 #include <linux/android_power.h>
