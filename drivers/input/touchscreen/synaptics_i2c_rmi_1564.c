@@ -38,7 +38,7 @@
 #include <mach/vreg.h>
 #include <mach/gpio.h>
 
-#include "linux/hardware_self_adapt.h"
+#include <linux/hardware_self_adapt.h>
 
 #include <linux/slab.h>
 #include <linux/touch_platform_config.h>
