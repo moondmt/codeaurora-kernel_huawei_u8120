@@ -31,10 +31,10 @@
 #include "yaffs_tagscompat.h"	/* for yaffs_calc_tags_ecc */
 #include "yaffs_linux.h"
 
-#include "linux/kernel.h"
-#include "linux/version.h"
-#include "linux/types.h"
-#include "linux/mtd/mtd.h"
+#include <linux/kernel.h>
+#include <linux/version.h>
+#include <linux/types.h>
+#include <linux/mtd/mtd.h>
 
 /* Don't compile this module if we don't have MTD's mtd_oob_ops interface */
 #if (MTD_VERSION_CODE > MTD_VERSION(2, 6, 17))

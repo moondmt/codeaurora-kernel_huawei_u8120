@@ -24,7 +24,7 @@
 #include <linux/cdev.h>
 #include <linux/platform_device.h>
 #include <linux/wakelock.h>
-#include "linux/types.h"
+#include <linux/types.h>
 
 #include <mach/board.h>
 #include <media/msm_camera.h>
@@ -209,6 +209,7 @@ static inline int msm_camera_flash_set_led_state(unsigned led_state)
 }
 #endif
 
+#ifdef CONFIG_MSM_CAMERA_V4L2
 /* Below functions are added for V4L2 kernel APIs */
 struct msm_v4l2_driver {
 	struct msm_sync *sync;
@@ -225,6 +226,7 @@ struct msm_v4l2_driver {
 
 int msm_v4l2_register(struct msm_v4l2_driver *);
 int msm_v4l2_unregister(struct msm_v4l2_driver *);
+#endif
 
 void msm_camvfe_init(void);
 int msm_camvfe_check(void *);

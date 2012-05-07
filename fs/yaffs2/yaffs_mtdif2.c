@@ -18,9 +18,9 @@
 
 #include "yaffs_mtdif2.h"
 
-#include "linux/mtd/mtd.h"
-#include "linux/types.h"
-#include "linux/time.h"
+#include <linux/mtd/mtd.h>
+#include <linux/types.h>
+#include <linux/time.h>
 
 #include "yaffs_packedtags2.h"
 

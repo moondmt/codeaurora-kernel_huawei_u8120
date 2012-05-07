@@ -33,7 +33,7 @@
 #include <linux/akm8975.h>
 #include <linux/earlysuspend.h>
 
-#include "linux/hardware_self_adapt.h"
+#include <linux/hardware_self_adapt.h>
 
 #ifdef CONFIG_HUAWEI_HW_DEV_DCT
 #include <linux/hw_dev_dec.h>
