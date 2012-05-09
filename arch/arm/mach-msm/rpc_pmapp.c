@@ -16,6 +16,7 @@
  *
  */
 
+#include <linux/slab.h>
 #include <linux/err.h>
 #include <asm/mach-types.h>
 #include <mach/board.h>

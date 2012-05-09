@@ -20,6 +20,7 @@
 /* TODO: maybe make server_list_lock a mutex */
 /* TODO: pool fragments to avoid kmalloc/kfree churn */
 
+#include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/string.h>

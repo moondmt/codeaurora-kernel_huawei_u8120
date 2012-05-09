@@ -23,6 +23,7 @@
 /* FIXME: check limits on command lenghts passed from userspace */
 /* FIXME: __msm_release: which queues should we flush when opencnt != 0 */
 
+#include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>

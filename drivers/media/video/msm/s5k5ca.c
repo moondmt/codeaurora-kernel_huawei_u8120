@@ -21,6 +21,7 @@
 #include <linux/i2c.h>
 #include <linux/uaccess.h>
 #include <linux/miscdevice.h>
+#include <linux/slab.h>
 #include <media/msm_camera.h>
 #include <mach/gpio.h>
 #include <mach/camera.h>
@@ -29,7 +30,6 @@
 #ifdef CONFIG_HUAWEI_HW_DEV_DCT
 #include <linux/hw_dev_dec.h>
 #endif
-
 
 #undef CDBG
 #define CDBG(fmt, args...) printk(KERN_INFO "s5k5ca.c: " fmt, ## args)

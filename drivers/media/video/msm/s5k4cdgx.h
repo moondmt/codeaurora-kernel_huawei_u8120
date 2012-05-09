@@ -1,5 +1,3 @@
-
-
 #ifndef S5K4CDGX_H
 #define S5K4CDGX_H
 

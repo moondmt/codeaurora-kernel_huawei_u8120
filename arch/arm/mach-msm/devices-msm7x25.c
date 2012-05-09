@@ -16,6 +16,7 @@
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
+#include <asm/clkdev.h>
 #include <mach/irqs.h>
 #include <mach/msm_iomap.h>
 #include <mach/dma.h>
@@ -28,6 +29,8 @@
 
 #include <asm/mach/mmc.h>
 #include <mach/msm_hsusb.h>
+#include <mach/usbdiag.h>
+#include <mach/rpc_hsusb.h>
 #include "msm7200a-gpio.h"
 
 static struct resource resources_uart1[] = {

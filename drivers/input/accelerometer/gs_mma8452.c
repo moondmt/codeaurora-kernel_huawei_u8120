@@ -27,6 +27,7 @@
 #include <linux/delay.h>
 #include <linux/miscdevice.h>
 #include <asm/uaccess.h>
+#include <linux/slab.h>
 #include <linux/hardware_self_adapt.h>
 
 #ifdef CONFIG_HUAWEI_HW_DEV_DCT

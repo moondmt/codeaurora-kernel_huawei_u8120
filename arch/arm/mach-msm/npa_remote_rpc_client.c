@@ -24,7 +24,7 @@
 #include <linux/err.h>
 #include <linux/platform_device.h>
 #include <mach/msm_rpcrouter.h>
-
+#include <linux/slab.h>
 #include "npa_remote.h"
 #include "proc_comm.h"
 

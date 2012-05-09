@@ -16,6 +16,7 @@
  * along with this program; if not, you can find it at http://www.fsf.org
  */
 
+#include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/types.h>
 #include <linux/i2c.h>

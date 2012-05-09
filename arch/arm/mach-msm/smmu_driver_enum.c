@@ -23,7 +23,7 @@
 #include <linux/io.h>
 #include <linux/vcm_mm.h>
 #include <linux/clk.h>
-
+#include <linux/slab.h>
 #include <mach/smmu_hw-8xxx.h>
 #include <mach/smmu_device.h>
 

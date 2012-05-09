@@ -47,7 +47,10 @@
 #include "mdp.h"
 #include "mdp4.h"
 #ifdef CONFIG_HUAWEI_KERNEL
-#define LCD_DEFAULT_BK_LEV              (104) 
+#include "lcdc_huawei_config.h"
+#endif
+#ifdef CONFIG_HUAWEI_KERNEL
+#define LCD_DEFAULT_BK_LEV              (104)  /*USE android default value*/
 #endif
 
 #ifdef CONFIG_HUAWEI_EVALUATE_POWER_CONSUMPTION

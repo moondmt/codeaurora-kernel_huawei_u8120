@@ -113,6 +113,7 @@ atomic_t touch_detected_yet = ATOMIC_INIT(0);
 #define MSM_7x25_TOUCH_INT       29
 #define MSM_7x25_RESET_PIN 		 96
 struct vreg *vreg_gp5 = NULL;
+struct vreg *vreg_synt= NULL;
 #endif
 
 /* all the pid used by mobile */
@@ -158,6 +159,7 @@ static unsigned int sub_board_id = 0;
 #define MSM_PMEM_AUDIO_START_ADDR	0x80000ul
 static DEFINE_MUTEX(lcdc_config);
 
+#if defined(CONFIG_SMC91X)
 static struct resource smc91x_resources[] = {
 	[0] = {
 		.start	= 0x9C004300,
@@ -177,6 +179,7 @@ static struct platform_device smc91x_device = {
 	.num_resources	= ARRAY_SIZE(smc91x_resources),
 	.resource	= smc91x_resources,
 };
+#endif
 
 #ifdef CONFIG_HUAWEI_BATTERY
 
@@ -554,12 +557,13 @@ static struct platform_device msm_device_snd = {
 	(1<<MSM_ADSP_CODEC_AMRNB)|(1<<MSM_ADSP_CODEC_WAV)| \
 	(1<<MSM_ADSP_CODEC_ADPCM)|(1<<MSM_ADSP_CODEC_YADPCM)| \
 	(1<<MSM_ADSP_CODEC_EVRC)|(1<<MSM_ADSP_CODEC_QCELP))
-#define DEC1_FORMAT ((1<<MSM_ADSP_CODEC_WAV)|(1<<MSM_ADSP_CODEC_ADPCM)| \
-	(1<<MSM_ADSP_CODEC_YADPCM)|(1<<MSM_ADSP_CODEC_QCELP))
-#define DEC2_FORMAT ((1<<MSM_ADSP_CODEC_WAV)|(1<<MSM_ADSP_CODEC_ADPCM)| \
-	(1<<MSM_ADSP_CODEC_YADPCM)|(1<<MSM_ADSP_CODEC_QCELP))
-
 #ifdef CONFIG_ARCH_MSM7X25
+#define DEC1_FORMAT ((1<<MSM_ADSP_CODEC_WAV)|(1<<MSM_ADSP_CODEC_ADPCM)| \
+	(1<<MSM_ADSP_CODEC_YADPCM)|(1<<MSM_ADSP_CODEC_QCELP)| \
+	(1<<MSM_ADSP_CODEC_MP3))
+#define DEC2_FORMAT ((1<<MSM_ADSP_CODEC_WAV)|(1<<MSM_ADSP_CODEC_ADPCM)| \
+	(1<<MSM_ADSP_CODEC_YADPCM)|(1<<MSM_ADSP_CODEC_QCELP)| \
+	(1<<MSM_ADSP_CODEC_MP3))
 #define DEC3_FORMAT 0
 #define DEC4_FORMAT 0
 #else
@@ -1160,10 +1164,23 @@ static unsigned bt_config_power_off[] = {
 
 static int bluetooth_power(int on)
 {
- //	struct vreg *vreg_bt;
+#ifndef CONFIG_HUAWEI_KERNEL
+  struct vreg *vreg_bt;
+#endif
 	int pin, rc;
 
 	printk(KERN_DEBUG "%s\n", __func__);
+#ifndef CONFIG_HUAWEI_KERNEL
+	/* do not have vreg bt defined, gp6 is the same */
+	/* vreg_get parameter 1 (struct device *) is ignored */
+	vreg_bt = vreg_get(NULL, "gp6");
+
+	if (IS_ERR(vreg_bt)) {
+		printk(KERN_ERR "%s: vreg get failed (%ld)\n",
+		       __func__, PTR_ERR(vreg_bt));
+		return PTR_ERR(vreg_bt);
+	}
+#endif
 
 	if (on) {
 		for (pin = 0; pin < ARRAY_SIZE(bt_config_power_on); pin++) {
@@ -1177,7 +1194,21 @@ static int bluetooth_power(int on)
 			}
 		}
 
-#ifdef HUAWEI_BCM4329
+#ifndef CONFIG_HUAWEI_KERNEL
+		/* units of mV, steps of 50 mV */
+		rc = vreg_set_level(vreg_bt, 2600);
+		if (rc) {
+			printk(KERN_ERR "%s: vreg set level failed (%d)\n",
+			       __func__, rc);
+			return -EIO;
+		}
+		rc = vreg_enable(vreg_bt);
+		if (rc) {
+			printk(KERN_ERR "%s: vreg enable failed (%d)\n",
+			       __func__, rc);
+			return -EIO;
+		}
+#else
         printk(KERN_ERR "bt power on");
         rc = gpio_direction_output(109, 1);  /*bt on :109 -->1*/
         if (rc) 
@@ -1187,17 +1218,25 @@ static int bluetooth_power(int on)
             return -EIO;
         }
 		mdelay(1);
-#endif
-            rc = gpio_direction_output(88, 1);  /*bton:88 -->1*/
-            if (rc) {
+
+        rc = gpio_direction_output(88, 1);  /*bton:88 -->1*/
+		if (rc) {
 			printk(KERN_ERR "%s: generation BTS4020 main clock is failed (%d)\n",
 			       __func__, rc);
 			return -EIO;
 		}
+#endif
         
 	} else {
-        rc = gpio_direction_output(88, 0);  /*btoff:88 -->0*/
-#ifdef HUAWEI_BCM4329
+#ifndef CONFIG_HUAWEI_KERNEL
+		rc = vreg_disable(vreg_bt);
+		if (rc) {
+			printk(KERN_ERR "%s: vreg disable failed (%d)\n",
+			       __func__, rc);
+			return -EIO;
+		}
+#else
+        rc = gpio_direction_output(88, 0);  /*bt off:88 -->0*/
         if (rc) 
         {
             printk(KERN_ERR "%s:  bt power off fail (%d)\n",
@@ -1229,13 +1268,15 @@ static int bluetooth_power(int on)
 
 static void __init bt_power_init(void)
 {
-#ifdef HUAWEI_BCM4329
 	int pin = 0, rc = 0;
-#endif
 
 	msm_bt_power_device.dev.platform_data = &bluetooth_power;
 
-#ifdef HUAWEI_BCM4329
+	if (gpio_request(88, "BT_POWER"))		
+  		  printk("Failed to request gpio 88 for BT_POWER\n");	
+    
+	if (gpio_request(109, "BT_REG_ON"))		
+  		  printk("Failed to request gpio 109 for BT_REG_ON\n");	
 	for (pin = 0; pin < ARRAY_SIZE(bt_config_power_on); pin++) {
 		rc = gpio_tlmm_config(bt_config_power_on[pin],
 				      GPIO_ENABLE);
@@ -1269,7 +1310,6 @@ static void __init bt_power_init(void)
                    __func__, bt_config_power_off[pin], rc);
         }
     }
-#endif
 }
 #else
 #define bt_power_init(x) do {} while (0)
@@ -1590,7 +1630,7 @@ static struct i2c_board_info i2c_devices[] = {
 #endif //CONFIG_HUAWEI_CAMERA_SENSOR_S5K5CA
 #ifdef CONFIG_HUAWEI_CAMERA_SENSOR_S5K4CDGX
 	{
-		I2C_BOARD_INFO("s5k4cdgx", 0xac >> 1),	
+		I2C_BOARD_INFO("s5k4cdgx", 0xac >> 1),
 	},
 #endif 
 //i2c address conficts with Synaptics TM1319 which used in M860 and C8600.
@@ -1637,7 +1677,7 @@ static struct i2c_board_info i2c_devices[] = {
         I2C_BOARD_INFO("gs_st", 0x70 >> 1),  // actual address 0x38, fake address (0x38 << 1)
         .platform_data = &gs_st_platform_data,
         .irq = MSM_GPIO_TO_INT(19)    //MEMS_INT1
-    },	  
+    },
 
 /* Add issue-fixed for c8600 t1 board: 
  *    issue: SDO pin of ST_L1S35DE is pulled up by hardware guy.
@@ -1928,6 +1968,7 @@ static int32_t sensor_vreg_enable(struct msm_camera_sensor_vreg *sensor_vreg,uin
     		printk(KERN_ERR "vreg_handle enable failed\n");
     		return -EIO;
     	}
+	mdelay(1);
     }
     return 0;
 }
@@ -1946,7 +1987,7 @@ static int32_t sensor_vreg_disable(struct msm_camera_sensor_vreg *sensor_vreg,ui
     for(temp_vreg_sum = 0; temp_vreg_sum < vreg_num;temp_vreg_sum++)
     {
 		/*power on camera can reduce i2c error. */
-        if( sensor_vreg[temp_vreg_sum].always_on &&  !(machine_is_msm7x25_um840()) )
+        if( sensor_vreg[temp_vreg_sum].always_on)
         {
             continue;
         }
@@ -2364,7 +2405,9 @@ static struct platform_device *devices[] __initdata = {
 	&android_usb_device,
 #endif
 	&msm_device_i2c,
-	//&smc91x_device,
+#if defined(CONFIG_SMC91X)
+	&smc91x_device,
+#endif
 	&msm_device_tssc,
 	&android_pmem_kernel_ebi1_device,
 	&android_pmem_device,
@@ -3019,6 +3062,13 @@ static void __init msm_device_i2c_init(void)
 	if (gpio_request(61, "i2c_pri_dat"))
 		pr_err("failed to request gpio i2c_pri_dat\n");
 
+#ifndef CONFIG_HUAWEI_KERNEL
+	if (gpio_request(95, "i2c_sec_clk"))
+		pr_err("failed to request gpio i2c_sec_clk\n");
+	if (gpio_request(96, "i2c_sec_dat"))
+		pr_err("failed to request gpio i2c_sec_dat\n");
+#endif
+
 	if (cpu_is_msm7x27())
 		msm_i2c_pdata.pm_lat =
 		msm7x27_pm_data[MSM_PM_SLEEP_MODE_POWER_COLLAPSE_NO_XO_SHUTDOWN]
@@ -3406,6 +3456,7 @@ static void __init msm7x2x_init(void)
 			&msm_device_uart3.dev, 1);
 #endif
 
+#if defined(CONFIG_SMC91X)
 	if (machine_is_msm7x25_ffa() || machine_is_msm7x27_ffa()) {
 		smc91x_resources[0].start = 0x98000300;
 		smc91x_resources[0].end = 0x980003ff;
@@ -3421,6 +3472,7 @@ static void __init msm7x2x_init(void)
 				__func__);
 		}
 	}
+#endif
 
 	if (cpu_is_msm7x27())
 		msm7x2x_clock_data.max_axi_khz = 200000;
@@ -3451,7 +3503,7 @@ static void __init msm7x2x_init(void)
 
 #ifdef CONFIG_USB_FUNCTION
 	msm_hsusb_pdata.swfi_latency =
-		msm7x27_pm_data
+		msm7x25_pm_data
 		[MSM_PM_SLEEP_MODE_RAMP_DOWN_AND_WAIT_FOR_INTERRUPT].latency;
 
 	msm_device_hsusb_peripheral.dev.platform_data = &msm_hsusb_pdata;
@@ -3476,7 +3528,7 @@ static void __init msm7x2x_init(void)
 
 #ifdef CONFIG_USB_GADGET
 	msm_gadget_pdata.swfi_latency =
-		msm7x27_pm_data
+		msm7x25_pm_data
 		[MSM_PM_SLEEP_MODE_RAMP_DOWN_AND_WAIT_FOR_INTERRUPT].latency;
 	msm_device_gadget_peripheral.dev.platform_data = &msm_gadget_pdata;
 #endif
@@ -4229,7 +4281,7 @@ MACHINE_START(MSM7X25_U8100, "HUAWEI U8100 BOARD")
 	.phys_io        = MSM_DEBUG_UART_PHYS,
 	.io_pg_offst    = ((MSM_DEBUG_UART_BASE) >> 18) & 0xfffc,
 #endif
-	.boot_params	= 0x00200100,
+	.boot_params	= PHYS_OFFSET + 0x100,
 	.fixup          = msm7x2x_fixup,
 	.map_io		= msm7x2x_map_io,
 	.init_irq	= msm7x2x_init_irq,
@@ -4242,7 +4294,7 @@ MACHINE_START(MSM7X25_U8105, "HUAWEI U8105 BOARD")
 	.phys_io        = MSM_DEBUG_UART_PHYS,
 	.io_pg_offst    = ((MSM_DEBUG_UART_BASE) >> 18) & 0xfffc,
 #endif
-	.boot_params	= 0x00200100,
+	.boot_params	= PHYS_OFFSET + 0x100,
 	.fixup          = msm7x2x_fixup,
 	.map_io		= msm7x2x_map_io,
 	.init_irq	= msm7x2x_init_irq,
@@ -4255,7 +4307,7 @@ MACHINE_START(MSM7X25_U8107, "HUAWEI U8107 BOARD")
 	.phys_io        = MSM_DEBUG_UART_PHYS,
 	.io_pg_offst    = ((MSM_DEBUG_UART_BASE) >> 18) & 0xfffc,
 #endif
-	.boot_params	= 0x00200100,
+	.boot_params	= PHYS_OFFSET + 0x100,
 	.fixup          = msm7x2x_fixup,
 	.map_io		= msm7x2x_map_io,
 	.init_irq	= msm7x2x_init_irq,

@@ -45,7 +45,7 @@ u32 avs_reset_delays(u32 avsdscr);
 u32 avs_get_avscsr(void);
 u32 avs_get_avsdscr(void);
 u32 avs_get_tscsr(void);
-void     avs_set_tscsr(u32 to_tscsr);
+void avs_set_tscsr(u32 to_tscsr);
 
 /*#define AVSDEBUG(x...) pr_info("AVS: " x);*/
 #define AVSDEBUG(...)

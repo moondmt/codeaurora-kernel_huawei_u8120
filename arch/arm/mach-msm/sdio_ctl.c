@@ -35,7 +35,7 @@
 #include <mach/msm_smd.h>
 #include <mach/sdio_al.h>
 #include "modem_notifier.h"
-
+#include <linux/slab.h>
 #define MAX_WRITE_RETRY 5
 #define MAGIC_NO_V1 0x33FC
 #define NUM_SDIO_CTL_PORTS 8

@@ -26,7 +26,7 @@
 #include <linux/list.h>
 #include <linux/vcm_mm.h>
 #include <linux/spinlock.h>
-
+#include <linux/slab.h>
 #include <asm/pgtable-hwdef.h>
 #include <asm/cacheflush.h>
 #include <asm/tlbflush.h>

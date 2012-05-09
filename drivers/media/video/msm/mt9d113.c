@@ -24,6 +24,7 @@
 #include <media/msm_camera.h>
 #include <mach/gpio.h>
 #include <mach/camera.h>
+#include <linux/slab.h>
 #include "mt9d113.h"
 
 #include <linux/hardware_self_adapt.h>

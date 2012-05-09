@@ -14,6 +14,7 @@
 #define __HW_LCD_DEBUG__
 
 #include <linux/syscalls.h>
+#include <linux/slab.h>
 
 #ifndef TRUE
 #define TRUE 1

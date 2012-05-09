@@ -15,6 +15,7 @@
  * along with this program; if not, you can find it at http://www.fsf.org.
  */
 
+#include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/platform_device.h>

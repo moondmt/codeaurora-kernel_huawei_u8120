@@ -19,6 +19,9 @@
 #include <linux/err.h>
 #include <linux/spinlock.h>
 #include <linux/pm_qos_params.h>
+#include <linux/clk.h>
+
+#include <asm/clkdev.h>
 
 #include "clock.h"
 #include "socinfo.h"

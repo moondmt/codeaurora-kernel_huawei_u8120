@@ -89,10 +89,16 @@ asflags-y := -Wa,-march=all
 LDFLAGS_vmlinux = --defsym _image_size=$(shell stat -c "%s" $(obj)/../Image)
 # Supply ZRELADDR to the decompressor via a linker symbol.
 ifneq ($(CONFIG_AUTO_ZRELADDR),y)
-LDFLAGS_vmlinux += --defsym zreladdr=$(ZRELADDR)
+LDFLAGS_vmlinux := --defsym zreladdr=$(ZRELADDR)
 endif
 ifeq ($(CONFIG_CPU_ENDIAN_BE8),y)
 LDFLAGS_vmlinux += --be8
+endif
+ifneq ($(INITRD_PHYS),)
+LDFLAGS_vmlinux += --defsym initrd_phys=$(INITRD_PHYS)
+endif
+ifneq ($(PARAMS_PHYS),)
+LDFLAGS_vmlinux += --defsym params_phys=$(PARAMS_PHYS)
 endif
 # ?
 LDFLAGS_vmlinux += -p

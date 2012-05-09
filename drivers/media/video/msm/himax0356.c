@@ -24,6 +24,7 @@
 #include <media/msm_camera.h>
 #include <mach/gpio.h>
 #include <mach/camera.h>
+#include <linux/slab.h>
 #include "himax0356.h"
 
 #ifdef CONFIG_HUAWEI_HW_DEV_DCT

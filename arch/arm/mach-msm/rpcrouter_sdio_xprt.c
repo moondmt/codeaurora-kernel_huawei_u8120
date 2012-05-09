@@ -34,6 +34,7 @@
 #include <linux/poll.h>
 #include <linux/wakelock.h>
 #include <asm/uaccess.h>
+#include <linux/slab.h>
 
 #include <mach/sdio_al.h>
 #include "smd_rpcrouter.h"

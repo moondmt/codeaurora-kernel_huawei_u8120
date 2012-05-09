@@ -58,7 +58,7 @@
 #include <linux/errno.h>
 #include <mach/pmic.h>
 #include <mach/camera.h>
-
+#include <mach/gpio.h>
 #ifdef CONFIG_HUAWEI_EVALUATE_POWER_CONSUMPTION
 #include <mach/huawei_battery.h>
 #define CAMERA_FLASH_CUR_DIV 10

@@ -28,6 +28,8 @@
 #include <linux/delay.h>
 #include <linux/platform_device.h>
 #include <linux/fs.h>
+#include <linux/slab.h>
+#include <linux/wakelock.h>
 
 #include <linux/mmc/core.h>
 #include <linux/mmc/card.h>

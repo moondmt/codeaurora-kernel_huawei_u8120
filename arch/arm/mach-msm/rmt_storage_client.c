@@ -30,7 +30,7 @@
 #include <linux/wakelock.h>
 #include <linux/rmt_storage_client.h>
 #include <linux/debugfs.h>
-
+#include <linux/slab.h>
 #include <asm/uaccess.h>
 #include <asm/pgtable.h>
 #include <mach/msm_rpcrouter.h>

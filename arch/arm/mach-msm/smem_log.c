@@ -19,6 +19,7 @@
  * Shared memory logging implementation.
  */
 
+#include <linux/slab.h>
 #include <linux/uaccess.h>
 #include <linux/module.h>
 #include <linux/fs.h>

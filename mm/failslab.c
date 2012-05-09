@@ -1,4 +1,5 @@
 #include <linux/fault-inject.h>
+#include <linux/slab.h>
 #include <linux/gfp.h>
 
 static struct {

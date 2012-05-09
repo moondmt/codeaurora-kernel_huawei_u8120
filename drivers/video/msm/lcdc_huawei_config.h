@@ -29,6 +29,7 @@
 #ifndef LCDC_HUAWEI_CONFIG_H
 #include "msm_fb.h"
 #include <linux/hardware_self_adapt.h>
+#include "lcd_hw_debug.h"
 
 #define LCDC_HUAWEI_CONFIG_H
 
@@ -37,7 +38,6 @@
 #define MSM_GP_MD_REG_VIRT_ADD            (MSM_CLK_CTL_BASE + GP_MD_REG_ADDR_OFFSET)
 #define MSM_GP_NS_REG_VIRT_ADD            (MSM_CLK_CTL_BASE + GP_NS_REG_ADDR_OFFSET)
 
-// Êä³öÆµÂÊÎª22.05KHZ
 #define PWM_LCD_NOT_N_M_VAL                0xFE4D
 #define PWM_LCD_M_VAL                      0x0001
 
@@ -50,7 +50,6 @@
 #define GP_NS_REG_GP_N_VAL                 (PWM_LCD_NOT_N_M_VAL << 16)
 #define GP_MD_REG_M_VAL                    (PWM_LCD_M_VAL << 16)
 
-/*delete*/
 
 void lcd_spi_init(struct msm_panel_common_pdata *lcdc_pnael_data);
 void seriout_transfer_byte(uint8 reg, uint8 start_byte);

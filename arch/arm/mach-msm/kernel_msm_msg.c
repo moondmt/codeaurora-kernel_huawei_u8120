@@ -16,6 +16,7 @@
  *
  */
 
+#include <linux/slab.h>
 #include <linux/kthread.h>
 #include <linux/wait.h>
 #include <linux/freezer.h>
