@@ -69,6 +69,13 @@ config CPU_FREQ_DEFAULT_GOV_PERFORMANCE
 	  the frequency statically to the highest frequency supported by
 	  the CPU.
 
+config CPU_FREQ_DEFAULT_GOV_LULZACTIVE
+  bool "lulzactive"
+  select CPU_FREQ_GOV_LULZACTIVE
+  select CPU_FREQ_GOV_PERFORMANCE
+  help
+    Use the CPUFreq governor 'lulzactive' as default.
+
 config CPU_FREQ_DEFAULT_GOV_POWERSAVE
 	bool "powersave"
 	depends on EMBEDDED
@@ -117,6 +124,18 @@ config CPU_FREQ_DEFAULT_GOV_SMARTASS2
 	help
 	  Use the CPUFreq governor 'smartassV2' as default.
 
+config CPU_FREQ_DEFAULT_GOV_SMARTASSH3
+  bool "smartassH3"
+  select CPU_FREQ_GOV_SMARTASSH3
+  help
+    Use the CPUFreq governor 'SmartassH3' as default. 
+
+config CPU_FREQ_DEFAULT_GOV_SCARY
+        bool "scary"
+        select CPU_FREQ_GOV_SCARY
+        help
+        Use the CPUFreq governor 'scary' as default. 
+
 config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 	bool "interactive"
 	select CPU_FREQ_GOV_INTERACTIVE
@@ -155,6 +174,12 @@ config CPU_FREQ_GOV_PERFORMANCE
 	  module will be called cpufreq_performance.
 
 	  If in doubt, say Y.
+
+config CPU_FREQ_GOV_LULZACTIVE
+  tristate "'lulzactive' cpufreq governor"
+  depends on CPU_FREQ
+  help
+    'lulzactive' - a new interactive governor by Tegrak! 
 
 config CPU_FREQ_GOV_POWERSAVE
 	tristate "'powersave' governor"
@@ -237,6 +262,22 @@ config CPU_FREQ_GOV_SMARTASS2
 	  'smartassV2' - a "smart" optimized governor for the hero!
 
 	  If in doubt, say N.
+
+config CPU_FREQ_GOV_SMARTASSH3
+  tristate "'SmartassH3' cpufreq governor"
+  depends on CPU_FREQ
+  help
+    'SmartassH3' - a "smartassV2 with tweaks by H3ROS" governor!
+
+    If in doubt, say N.
+
+config CPU_FREQ_GOV_SCARY
+        tristate "'scary' cpufreq governor"
+        depends on CPU_FREQ
+        help
+        scary - a governor for cabbages
+
+        If in doubt, say N. 
 
 config CPU_FREQ_GOV_LAGFREE
         tristate "'lagfree' cpufreq governor"
