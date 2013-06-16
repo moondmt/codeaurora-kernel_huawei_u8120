@@ -1565,7 +1565,6 @@ struct task_struct {
 	/* bitmask of trace recursion */
 	unsigned long trace_recursion;
 #endif /* CONFIG_TRACING */
-	unsigned long stack_start;
 };
 
 #ifdef CONFIG_SCHED_BFS
